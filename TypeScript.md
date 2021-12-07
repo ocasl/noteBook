@@ -43,7 +43,7 @@ strict  严格检查的总开关   true   使代码更严谨
 
 对项目进行初始化 npm init -y
 
-cnpm i -D webpack webpack-cli typescript ts-loader
+   npm i -D webpack webpack-cli typescript ts-loader
 
 安装好四个包
 
@@ -74,7 +74,7 @@ use ‘ts-loader‘
 ||运算符解析。
 
 ```js
-var a = obj || " " ;   //如果 obj 为空，a就赋值为 " " ；
+var a = obj || " " ;   //如果 obj 为空，a就赋值为 " " ； 默认值
 ```
 
 #### gitee项目上传到远程仓库中
@@ -188,7 +188,7 @@ this.element.style.left = left + 'px';
 maxLevel: number;    score = 0;  
 ```
 
- 格式是 不带var let  const    变量名字：变量的类型 后面可以赋值 也可以不赋值   不说变量的类型那么这个变量的类型就是any   
+ 格式是 **不带var let  const**    变量名字：变量的类型 后面可以赋值 也可以不赋值   不说变量的类型那么这个变量的类型就是any   
 
 var和不var 的区别： 带var    在当前域中那么声明的就是这个域的局部变量 在外面的带var就是全局变量
   不带var 只是对属性赋值操作 
@@ -308,7 +308,7 @@ btn.onclick = function() {
     语法：元素名.style.样式名="属性描述"  为空的时候就是清除的意思直接写null也行
 ```
 
-```
+```txt
 注意：
        1.只能操作行内样式
        2.当设置的样式含有单位时 则必须+单位
@@ -352,7 +352,7 @@ btn.onclick = function() {
 ```
 
 ```
-1 className
+1 className      React标签中这样写
    描述：设置元素的类及其值
    语法：元素名.className
    例子：
@@ -476,7 +476,7 @@ let elLeft = event.target.getBoundingClientRect().left;
 
 #### 事件对象阻止默认行为的方法
 
-默认行为就是一个事件触发了不是方法内的是本身标签就特有的方法  只需要在方法体内 return false 就可以让默认事件不发生   或者e.preventDefault();
+默认行为就是一个事件触发了不是方法内的是**本身标签就特有的方法**  只需要在方法体内 return false 就可以让默认事件不发生   或者e.preventDefault();     事件修饰符
 
 #### 阻止事件冒泡
 
@@ -745,7 +745,7 @@ ALTER USER 'root'@'localhost' IDENTIFIED BY '123456';
 const { data: res } = await this.$http.delete(`goods/${id}`)
 ```
 
-这里的url  后面不是用单引号 是用   ---------   **反引号** 
+这里的url         后面不是用单引号 是用   ---------   **反引号**     **模板字符串**
 
 #### token登陆原理
 
@@ -821,7 +821,7 @@ model="loginForm.username"
 ```
 
 ```js
-prefix-icon="el-icon-lock"
+prefix-icon="el-icon-lock"       放在input前面的锁图标
 ```
 
 2. #### 用于表单输入框的前面的图标属性
@@ -840,7 +840,7 @@ prefix-icon="el-icon-lock"
 #### 最外层绑定规则
 
 ```js
-el-form-item prop="username"
+el-form-item prop="username"           父给子传的prop
 ```
 
 #### 在每个输入表单中定义prop
@@ -965,7 +965,7 @@ v-for ="item for  menuList"   用来将item表示每个一级菜单的子元素�
 
 13. #### 实现二级菜单点击高亮的一个效果
 
-首先在每个耳机菜单e-menu 里面 有一个属性是defalut active  类型是是tiring类型将点击的菜单的path 存在在本地撒宣死多瑞里面
+首先在每个二级菜单e-menu 里面 有一个属性是defalut active  类型是是tiring类型将点击的菜单的path 存在在本地撒宣死多瑞里面
 
 14. #### 常用的面包屑 
 
@@ -1112,7 +1112,7 @@ webpack是可以文件包的别名
 
 生命周期：增加了`setup`函数。其他周期函数基本就是命名上在vue2.x的基础上加上`on`前缀，以驼峰命名方式命名，要写到setup函数里面
 
-vue3里面可以没有根标签
+vue3里面可以没有根标签《div.>
 
 #### 项目结构是怎么样的？
 
@@ -1128,7 +1128,7 @@ public公共资源   dist 打包之后得到的目录    index.html 首页的入
 
 1. 可以通过调用 `useStore` 函数，来在 `setup` 钩子函数中访问 store。这与在组件中使用选项式 API 访问 `this.$store` 是等效的。
 
-访问的是store 得到的也是store 的实例 实例中有的一些方法commit、getters 、dispatch
+访问的是store 得到的也是**store 的实例** 实例中有的一些**方法**commit、getters 、dispatch
 
 2. vuestore 里面的存储方法
 
@@ -1142,7 +1142,7 @@ useStore 函数就是为了得到store 的实例   我们把他直接给一个�
 
 在vue3可以写data和method 但是 vue2可以读取到vue3配置数据和方法
 
-但是vue3不可以读取到vue2的数据和方法
+但是vue3不可以读取到vue2的数据和方法            **向上兼容的**
 
 
 
@@ -1152,13 +1152,13 @@ useStore 函数就是为了得到store 的实例   我们把他直接给一个�
 
 
 
-async 不可以加载setup里面因为一加里面应该是要返回一个promise 才能拿到 导致渲染不上到网页上。
+async 不可以加载setup里面因为一加里**必须是要返回一个promise** 才能拿到 导致渲染不上到网页上。
 
 #### setup
 
 1. ref   ref 在vue3中是一个函数  
 
-在setup中我们定义一个数据应该是以返回值的形式来定义要不然数据做出了修改页面上也不会发生改变  let name  =ref（'张三 '） 这样的数据才能被渲染到页面上 
+在setup中我们定义一个数据应该是以**返回值的形式**来定义要不然数据做出了修改页面上也不会发生改变  let name  =ref（'张三 '） 这样的数据才能被渲染到页面上  
 
 **普通数据类型:**
 
@@ -1166,13 +1166,13 @@ async 不可以加载setup里面因为一加里面应该是要返回一个promis
 
 **对象类型**
 
-变成了proxy类型了，  reactive 函数   也就是说如果我定义的数据类型是一个对象的话那么我 应该  let job = reactvie（{  巴拉巴拉}） 然后引用的方法是什么都不用，不用去点value了 直接一层层的点到要操作的数据  也可以操作数组的类型可以直接修改
+变成了**proxy**类型了，  reactive 函数   也就是说如果我定义的数据类型是一个对象的话那么我 应该  let job = **reactvie**（{  巴拉巴拉}） 然后引用的方法是什么都不用，**不用去点value**了 直接一层层的点到要操作的数据  也可以操作数组的类型可以直接修改
 
-通过代理对象，数据劫持。
+通过**代理对象，数据劫持**。
 
 #### vue3中的数据劫持
 
-reflect 反射 本身会返回一个布尔值 ，说明他成功没成功  可以通过if判断 ，但是object.denfinproperxy 没有布尔值需要利用try catch   
+**reflect** 反射 本身会返回一个**布尔值** ，说明他成功没成功  可以通过if判断 ，但是object.denfinproperxy 没有布尔值需要利用try catch   
 
 js中的object 将来会搬运到reflect 中去 。
 
@@ -1189,8 +1189,8 @@ Object.defineProperty
 
 this 是常用的。 
 
-1. $attr 是简陋的  我们在prop是没有声明的会出现在$attr 中
-2. $slot   template 里面slot 属性  等于是在父组件中挖坑 ，子组件的中去定义这个插槽
+1. $attr 是**捡漏**的  我们在**prop**是没有声明的会出现在$attr 中
+2. $**slot**   **template 里面slot** 属性  等于是在父组件标签**<template>**中挖坑 ，子组件的中去定义这个插槽
 
 **vue3**
 
@@ -1235,7 +1235,7 @@ vue 的watch 可以传第三个参数 就是他的配置项  immdiate：true
 
 如果真的需要监视到那个旧值我们把他放在ref中。**默认开始是深度监视而且是关不掉的**
 
-2. 只能监视到 对象 普通数据类型，数组 ， watch的第一个参数只能是这些，不能是对象的属性  ， 解决方案 ： 写成一个函数的形式 ，（）=》person.name  直接返回的是对象的属性。  可以把函数写在数组中实现多个属性的监听 。
+2. 只能监视到 对象 普通数据类型，数组 ， watch的第一个参数只能是这些，不能是对象的属性  ， 解决方案 ： 写成一个**函数**的形式 ，（）**=》**person.name  直接返回的是对象的属性。  可以把函数写在数组中实现多个属性的监听 。
 3. deep有没有效果完全是看watch 的第一个参数  监视的是什么类型   如果是对象默认会开启深度监视 ， 如果是函数返回对象的某一个属性 deep配置true生效 。
 
 #### watch 监听ref数据点不点value  
@@ -1244,19 +1244,19 @@ vue 的watch 可以传第三个参数 就是他的配置项  immdiate：true
 
 #### watchEffect
 
-默认立即监视 用谁监视谁 。。。  不用指明监视哪个属性，有点像computed    初始化变化一次所用到的数据会变一次  。 computed是返回值，  watchEffect 是返回函数 注重的是过程 。 。
+默认**立即监视 用谁监视谁** 。。。  不用指明监视哪个属性，有点像computed    初始化变化一次所用到的数据会变一次  。 **computed是返回值**，  **watchEffect 是返回函数** 注重的是过程 。 。
 
 vue3中mount 和unmount 两个   
 
 #### 自定义hook函数   
 
-把组合式api进行封装 
+把**组合式api进行封装** 
 
-hooks封装在js文件里面一般是函数的形式这个函数要有返回值 ， 才能在组件里面使用 
+hooks封装在js文件里面一般是函数的形式这个函数要有**返回值** ， 才能在组件里面使用 
 
 let ponit =fn（）；  得到函数的返回值   模板内可以使用 。外部的方法可以引用。
 
-组合api  只要是setup里面写的都是组合api    类似于vue2.x的mixin   
+组合api  只要是setup里面写的都是组合api    类似于vue2.x的**mixin**   
 
 优势 :  复用代码  让setup更清晰易懂
 
@@ -1281,42 +1281,14 @@ torefs将对象变成 ref对象 。。。批量变成ref对象
 #### 生命周期 
 
 ```js
-setup()相当于beforeCreate()和created()
+setup()     相当于beforeCreate()	 和created()
 ```
 
 可以直接在里面写函数
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。待
 
 ## VUE  相关 
 
@@ -1423,7 +1395,7 @@ import ratingStar from 'src/components/common/ratingStar'  // 往组件里面导
 props:['rating'],  // 在vue中声明一下值
 ```
 
-注： **ata、props、computed**
+注： **data、props、computed**
 
 例子：
 
@@ -1471,9 +1443,9 @@ data(){    return{      title:"我给爸爸传的值"    }
        updateTitle（e）{this.title=e;}
 ```
 
-**总结：子组件通过events给父组件发送消息，实际上就是子组件把自己的数据发送到父组件 ** 不属于自定义指令里面的应该是自定义的v-on 的方法这样说才对。
+**总结：子组件通过events给父组件发送消息，实际上就是子组件把自己的数据发送到父组件 ** 不属于自定义指令（v-on）里面的应该是**自定义的v-on 的方法**这样说才对。
 
-一般看到emit 一般就是要绑在v-on 的指令的方法了。 
+一般看到**emit** 一般就是要绑在**v-on** 的指令的方法了。 
 
 ts写法：
 
@@ -1559,17 +1531,18 @@ v-if="userInfo"放在了mapState 状态管理里面
 
 将多个组件公用的配置提取到mixin.js文件里面  
 
-介绍：mixins是一个js对象，它可以包含我们组件中script项中的任意功能选项，如data、components、methods 、created、computed等等。我们只要将共用的功能以对象的方式传入 mixins选项中，当组件使用 mixins对象时所有mixins对象的选项都将被混入该组件本身的选项中来，这样就可以提高代码的重用性，使你的代码保持干净和易于维护。
+介绍：**mixins是一个js对象**，它可以包含我们组件中script项中的任意功能选项，如**data、components、methods 、created、computed**等等。我们只要将共用的功能以对象的方式传入 mixins选项中，当组件使用 mixins对象时所有mixins对象的选项都将被混入该组件本身的选项中来，这样就可以提高代码的重用性，使你的代码保持干净和易于维护。
 
 怎么使用？  
 
 在要使用的组件里面 引入myMixins.js文件，然后在export default 中引入你需要的对象即可
 
 ```js
-import { myMixins } from "@/mixins/myMixins.js"; export default { mixins:[myMixins]}
+ 	import { myMixins } from "@/mixins/myMixins.js";
+ 	export default { mixins:[myMixins]}
 ```
 
-总结 : 相当于是生成一个新的组件 ， 和vuex 不同的是在不同的组件之间改变组件之间不影响的。
+总结 : 相当于是生成一个**新的组件** ， 和vuex 不同的是：在不同的组件之间改变组件之间**不影响**的。
 
 **vuex：**用来做状态管理的，里面定义的变量在每个组件中均可以使用和修改，在任一组件中修改此变量的值之后，其他组件中此变量的值也会随之修改。 
 
@@ -1588,11 +1561,11 @@ import { myMixins } from "@/mixins/myMixins.js"; export default { mixins:[myMixi
 
 官方：在下次 DOM 更新循环结束之后执行延迟回调。在修改数据之后立即使用这个方法，获取更新后的 DOM
 
-使用：如果想要在修改数据后立刻得到更新后的`DOM`结构，可以使用`Vue.nextTick()`
+使用：如果想要在**修改数据后立刻得到更新后的`DOM`结构**，可以使用`Vue.nextTick()`
 
 组件内使用 `vm.$nextTick()` 实例方法只需要通过`this.$nextTick()`，并且回调函数中的 `this` 将自动绑定到当前的 `Vue` 实例上
 
-总：  是一种优化的策略 ， 在dom更新之后我们在回调函数会被触发  就是dom发生改变这个函数就是会触发 然后回调函数也会触发
+总：  是一种**优化的策略** ， 在dom更新之后我们在回调函数会被触发  就是dom发生改变这个函数就是会触发 然后回调函数也会触发
 
 #### **Bus总线** 是什么东西 全局事件总线（GlobalEventBus）
 
@@ -1610,7 +1583,7 @@ new Vue({
 })
 ```
 
-在vue的原型上我们有几个 $on,$off,$emit  绑定 解绑 触发  方法
+在vue的原型上我们有几个 **$on,$off,$emit**  绑定 解绑 触发  方法
 
 接受数据： 
 
@@ -1643,7 +1616,7 @@ beforeDestroy() {
 
 #### tirm函数  
 
-trim() [1] 函数移除字符串两侧的空白字符或其他预定义字符。  两侧的都会去祛除
+trim() [1] 函数移除字符串两侧的**空白字符或其他预定义字符**。  **两侧**的都会去祛除
 
 ####  Vue 中的MVVM模式 
 
@@ -1657,11 +1630,11 @@ MVVM 是 Model-View-ViewModel 的缩写。MVVM 是一种设计思想。Model 层
 
 ##### 数据劫持   数据代理 
 
-vm.$options 存放的就是vue 里面的  exprot defalut  里面的属性对象   将属性挂载在实例的options上， 最后在末尾是要用到object.obsever()方法对数据改变进行观测，一旦发生改变会调用他的回调方法。
+**vm.$options**  参数  	 存放的就是vue 里面的  exprot defalut  里面的属性对象   将属性挂载在实例的options上， 最后在末尾是要用到**object.obsever()方法**对数据改变进行**观测**，一旦发生改变会调用他的回调方法。
 
 总结：  数据劫持就是将新生的数据给 他生成get和set 方法在原型的js方法里面就不用配置一些  属性：ture  ， 
 
- 总结： M 是scrpit 里面的data   V 是template    VM 是 v-model  双向绑定数据   是双向绑定 ， vue 数据劫持，+发布和订阅模式，  
+ 总结： M 是scrpit 里面的data   V 是**template**    VM 是 v-model  双向绑定数据   是双向绑定 ， vue 数据劫持，+发布和订阅模式，  
 
 #### vue 的options 选项
 
@@ -1683,7 +1656,7 @@ vm.$options 存放的就是vue 里面的  exprot defalut  里面的属性对象 
 
 el   :  是可以用new Vue().$mount('#app')  替代的。  html根元素直接挂载在new vue 实例上面 。 
 
-data :  是vue的内部数据 ，利用函数的形式，  为什么要函数? 因为： vue中组件是用来复用的，为了防止data复用，将其定义为函数
+data :  是vue的内部数据 ，利用函数的形式，  为什么要函数? 因为： vue中组件是用来复用的，为了**防止data复用，将其定义为函数** 	 	 	 	
 
 methods：  函数|方法    和实例挂钩的是方法   在实例外面的就是函数   
 
@@ -1735,7 +1708,7 @@ mixin中的生命周期与引入该组件的生命周期是仅仅关联的，且
 
 就是在这个Table-column作用范围内的 scope的全部数据   自定义列的内容，参数为 { row, column, $index}   scope.row拿到是这一行的数据
 
-#### Tooltip 
+#### Tooltip  小工能
 
 按钮上面显示提示![image-20211108223156512](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20211108223156512.png)
 
@@ -1746,14 +1719,14 @@ this.store.dispatch()与this.store.dispatch() 与 this.store.dispatch()与this.s
 commit: 同步操作
 
 ```js
- this.$store.commit('changeValue',name)  //这里的chageValue就是moutation.js里面的我们可以用es6里面的常量代替这个moutations封在一个js文件里面
- this.$store.state.changeValue
+ this.$store.commit('changeValue',name)  //这里的chageValue就是moutation.js里面的我们可以用es6里面的常量代替这个 moutations封在一个js文件里面
+ this.$store.state.changeValue       
 ```
 
 dispatch: 异步操作
 
 ```js
- this.$store.dispatch('getlists',name)  // 存值
+ this.$store.dispatch('getlists',name)  // 存值 
  this.$store.getters.getlists // 取值
 ```
 
@@ -1832,7 +1805,7 @@ export default {
 
 #### mapMutations解析
 
-是vuex 里面的辅助函数
+是vuex 里面的**辅助函数**
 
 使用：  先从vuex 中导入在组件中    
 
@@ -1869,7 +1842,7 @@ removeOutCart(category_id, item_id, food_id, name, price, specs, packing_fee, sk
 
 
 
-#### CSS交互动画指南之keyframes
+#### CSS交互动画指南之keyframes 		 		 	  动画 
 
 ```css
 @keyframes slide-in {
