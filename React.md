@@ -221,6 +221,16 @@ props 是**只读**的不能修改但是可以计算
 
   只能使用props
 
+#### 对组件中props 的限制  指定属性的默认值
+
+1. props 是组件的属性 我们可以对他进行限制 提高代码的质量就像 ts一样 
+
+组件名.propTypes= {属性:propTypes.string.isRequired  ....}
+
+2. 指定属性的默认值 
+
+Person.defaultProps{  sex:"nan "  ,age:1}// 默认是男的1岁
+
 #### refs 
 
 **标签**中加上ref**属性**就代表引用refs
@@ -272,13 +282,394 @@ class 绑定函数的方式： ref =this.saveInput  已经放在了实例上了�
 
 promise   ， set timeout    arr.map 
 
+
+
 ####  函数的柯里化 
 
 通过函数继续返回函数的方式实现多次接受参数处理函数编码的形式   **最后统一处理**
 
+```java
+saveFormData = (dataType)=>{
+   return (event)=>{
+      //  return之后收到是什么咯
+      this.setState({[dataType]:event.target.value})
+   }
+}
+```
 
+没有使用：
+
+```javascript
+saveFormData = (dataType,event)=>{
+   this.setState({[dataType]:event.target.value})
+}
+```
 
 将数组写进函数的 参数中  
+
+#### 生命周期
+
+render函数开始 挂载
+
+mount 挂载   unmount  卸载  
+
+componentDidMount      出生了  一般做初始化的工作
+
+componentWillMount  交代后事   做一些收尾的事情
+
+生命周期函数钩子    reacat 会在特定的时间会调用一些函数
+
+钩子是不受代码的写的顺序影响的。
+
+1.  正常更新 : shouldComponentUpdate   问是否需要更新， 写了需要要有布尔值  不写默认是放行的 。之后需要通过componentwillupdate     在将要更细前  
+
+2. 强制更新  ： 不对状态做出任何的修改 ，forceUpdate  强制更新  不需要走shouldComponent Update
+
+
+
+componentWillreviceProps 第一次不算 第二次更新才算  
+
+  
+
+在最新的钩子里面需要加一个unsafe  
+
+componentWillmount    recevice    update   这三个将来弃用
+
+过时的生命周期带来不安全的编码时间   进行异步的编码
+
+被误解和滥用，如果异步渲染出来之后可能会有bug 所以这个是预估以后版本有问题 。  很少使用钩子  。。。
+
+#### 新的钩子和旧的钩子有什么区别啊
+
+废除三个钩子
+
+新推出来的钩子两个不常用
+
+1. getDerivedStateFromProps（props，state）两个参数
+
+得到一个派生的状态罕见的用例 
+
+state值在任何时候都取决于props    横跨在挂载的地方
+
+2. getSnapshotBeforeUpdate
+
+在更新之前获取快照  值必须要返回快照或者null
+
+perprops和perstate   之前的props和之前的状态 
+
+再提交dom之前调用  返回的任何参数值传给 componentDidUpdate    快照之前获取信息将给这个钩子
+
+处于render和Didupdate之前
+
+```javascript
+componentDidUpdate(preProps,preState,snapshotValue)
+```
+
+更新前获取快照
+
+#### React 脚手架
+
+组件文件夹中用index.jsx    
+
+css 可以使用样式模块化 
+
+rcc 可以快速生成模板  ，是不用手巧的  rcc 是模板
+
+#### React  ajax  发生网络请求 
+
+```javascript
+getStudentData = ()=>{    axios.get('http://localhost:3000/api1/students').then(
+  response => {console.log('成功了',response.data);},
+      error => {console.log('失败了',error);}
+    )
+  }
+```
+
+node和express写的代理服务器   
+
+**跨域**
+
+3000发5000  跨域  发了 但是没有回来   
+
+##### 如何配置代理
+
+配置多个代理
+
+setupProxy.js 文件里面  
+
+```javascript
+const proxy = require('http-proxy-middleware')
+然后我们配置两个服务器
+module.exports = function(app){
+  app.use(
+   proxy('/api1',{ *//遇见/api1前缀的请求，就会触发该代理配置*
+      target:'http://localhost:5000', *//请求转发给谁*
+     changeOrigin:true,*//控制服务器收到的请求头中Host的值*
+     pathRewrite:{'^/api1':''} *//重写请求路径(必须)*
+    }),
+    proxy('/api2',{
+      target:'http://localhost:5001',
+      changeOrigin:true,
+      pathRewrite:{'^/api2':''}
+    }),
+  )
+}
+```
+
+#### 消息订阅和发布
+
+##### 实现兄弟组件间的通讯
+
+```javascript
+this.token=PubSub.subscribe('atguigu',(_,stateObj)=>{
+      this.setState(stateObj)
+      })
+```
+
+参数三个   要发送的消息，回调函数  
+
+订阅方就是发送消息的人，
+
+在这个组件卸载前需要取消订阅   
+
+```javascript
+componentWillUnmount(){
+    PubSub.unsubuscribe(this.token)
+  }
+```
+
+
+
+订阅报纸：交钱说好地址订阅哪种报纸
+
+订阅消息： 消息名
+
+发布机制 pubsubJs    发布订阅js
+
+yarn add pubsub.js 
+
+app不应该有状态 放在list里面谁需要放在谁哪里
+
+任意组件的沟通都行， 消息订阅发布技术 
+
+#### axios配合订阅和发布  得到信息 。 
+
+例子等于是一个获取搜索信息的请求 
+
+```javascript
+*const {keyWordElement:{value:keyWord}} = this*
+```
+
+连续的一个结构赋值
+
+```javascript
+axios.get(`/api/search/users2?q=${keyWord}`).then(response=>{
+   //  PubSub.publish('尚硅谷',{isLoading:false,users:response.data.items})
+},error=>{
+    pubsub.publish('巴拉巴拉',isloading:false,err:error.message))
+}
+}
+```
+
+
+
+#### fetch 发送请求
+
+xhr    =》 axios   都是对xhr 的封装
+
+fetch  没有利用到xhr                    直接可以在浏览器使用
+
+1. 第一步联系服务器，数据没有取出来
+2. response.json里面是promise 
+3. 老版本不支持fetch   不用下载不用引用 浏览器原生的
+
+axios 为主 : : : : :: :  
+
+##### fetch 优化
+
+```javascript
+	try {
+			const response=await fetch(`/api1/search/users?q=${keyWord}`)
+			const data=await response.json()
+			console.log(data);
+			PubSub.publish('atguigu',{isLoading:false,users:data.items})
+		}catch(error){
+			console.log('请求出错',error)
+			PubSub.publish('atguigu',{isLoading:false,err:error.message})
+		}
+```
+
+
+
+#### Spa应用的理解    
+
+单页面应用  ， 整个应用只有一个完整的页面，点击链接指挥做页面的局部更新 数据需要哦通过ajax请求获取，在前端异步展现
+
+#### 路由  
+
+kv映射的关系  key是路径，value 是方法或者是组件 
+
+后端路由和前端路由
+
+1.  value 是方法函数 ， ， ， ，node接受到一个请求之后后端路由根据路径去调用函数来处理请求 返回数据   
+
+router.get(path , fn(req,res))
+
+2.  value  是组件  浏览器的path变了页面编程相应的组件
+
+#### 路由到底怎么配置
+
+1. 其他不说必须先安装npm i react-router-dom -S
+
+一般用的history模式
+
+### [React](https://so.csdn.net/so/search?from=pc_blog_highlight&q=React) 路由匹配规则
+
+1. excat 是精确匹配 ，
+2. switch 包住。
+
+
+
+#### 前端路由的原理 
+
+1. history
+
+bom 中的history   ， 
+
+浏览器的记录是栈的数据结构    h5 推出的。   
+
+push  是入栈 ， ，  ，
+
+前进和后退  ，   replace  是栈顶的被换成 replace 的记录 。 
+
+2.  hash  
+
+多了一个＃ ， 
+
+#### 路由的基本使用 
+
+1. react router 理解  dom     我们选择web 的
+
+有三种 web  native  any    官方维护的router库 ， ，
+
+yarn add  react-router-dom   **安装路由**   
+
+可以实现      页面不  刷新的
+
+原生中靠<a> 标签实现页面条状 ，  在react 中我们靠路由连接跳转页面，
+
+不应在路由器外面写link ，把整个app用路由器包住在index.js包住
+
+路由器分两种   browsrouter  和hash router
+
+#### 路由组件和和一般组件
+
+路由组件放在pages    一般组件放在components  
+
+路由组件需要靠路由匹配才能渲染
+
+区别：路由组件能收到**路由器**给他的三个东西，history，location，match  
+
+#### Navlink 的使用
+
+想要高亮就要使用这个路由链接，
+
+为什么？link 加active   ，   在navlink里面有actveclassName 的样式属性名我们可以给他取名字然后区给他加样式。
+
+bootstrap 的权限有点高， 所有如果要自定义我们要用！import
+
+#### 封装navlink组件
+
+navlink里面需要批量的传参数
+
+1.  在navlink 里面利用{...this.props}
+
+2. 标签体内容是一个标签属性  ，  在标签属性就是children
+
+this.props.children    
+
+#### switch 的使用 
+
+怎么提高路由的匹配效率 
+
+我们用switch 包住路由  
+
+#### 使用二次路由掉了样式
+
+public 里面是devserver    locallhost ：3000     是这个路径
+
+index.html 是兜底的人，如果服务器在public 找不到资源最终会用index.html 兜底。
+
+解决办法： 
+
+1. herf 写%PUBLIC_URL%    react 才认识  
+2. herf 前面点去掉
+3. 使用hash路由  # 后面不看的    少用 
+
+#### 重定向
+
+写在全部的路由最下方   < reactve
+
+
+
+#### 引入路由
+
+```javascript
+<BrowserRouter>
+				<Switch>
+					<Route path="/login" component={Login}></Route>
+					<Route path="/admin" component={admin}></Route>
+				</Switch>
+			</BrowserRouter>
+```
+
+#### 根据id 获取商品 
+
+```javascript
+export const reqCategorys = (parentId: string): Promise<ResponseValue<any>> =>    //  promise 是一个respsonse  任意类型的。
+	ajax<ResponseValue<any>>(`/api/category/list/${parentId}`);
+```
+
+##### ajax 封装 带上antd 组件  message 效果 。
+
+需要axios 和antd 里面的message  自行引入把。
+
+默认暴露ajax 方法泛型  
+
+要参数 ： url ，data  得到的数据， 成一个对象  ， method 方法请求方法默认是Get   
+
+```javascript
+method: ReqMethodEnum = ReqMethodEnum.GET
+```
+
+在 ts文件里面定义了一个枚举类型
+
+```javascript
+export enum ReqMethodEnum {
+	GET = 'GET',
+	POST = 'POST',
+	PUT = 'PUT',
+	DELETE = 'DELETE',
+}
+```
+
+封装的ajax 本身是一个promise 他有两种i结果。  reject 和reslove  结果 。
+
+因为请求的方法有点多 ，所以reject 不能使用因为一个promise 只能有一个结果。   我们这里用cath代替。
+
+promise = aixos.get(url,axosrequest config : 是一个对象 里面你可以存放请求头 以及是数据的data 参数 )
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
