@@ -1,5 +1,11 @@
 # React
 
+1. 创建虚拟dom将js代码存起来，每当状态发生了改变的时候创造出新的虚拟节点和旧的虚拟节点进行对比，让变化的过程进行渲染没有对dom进行获取和操作   **只是渲染react 是ui的框架**
+2. react 用setSatate来控制视图的更新，会自动的去调用render函数
+3. 上面说到在两个岛屿之间react 会去储存一些**dom树**，拿到这些dom树会和更新之后的虚拟dom 去做比较 **在这个比较的过程中利用到了diff算法** 过程： **相同的节点**查看属性是否改变了，如果改变了直接更新属性 ，**不同的节点** 直接**全节点**（包括子）给换新的
+
+这是dom树的  列表就不一样了 列表不需要去查看每一个因为他们都是相同的节点 所以一旦发现属性发生改变我们就直接去替换掉他 ， 这里最好把列表的key值写上去
+
 ### 碎屑：
 
 style Component    CSS  moudule    css 优化的方案 
@@ -659,17 +665,142 @@ export enum ReqMethodEnum {
 
 promise = aixos.get(url,axosrequest config : 是一个对象 里面你可以存放请求头 以及是数据的data 参数 )
 
+#### 组件之间通信
+
+1. 父传给子通过回调函数传给子
+2. 利用上下文getChildContext， 任何的组件可以通过this.context直接访问 
+3. redux 因为父组件给子组件传消息但是我们要实现的是兄弟组件的 通信  而redux 帮我们解决了。
+
+# Redux
+
+![redux原理图](React.assets\redux原理图.png)
+
+应该避免使用redux    
+
+要做什么要交给actions creators  
+
+actions对象包括type：    和   data  数据  
+
+  
+
+状态全部交给store 去管理 
+
+前面说到我们的顶层的组件之间是不容易通信的  ，但是我们可以将Redux 套在  顶层的组件外面实现 父给子传递信息  ，
+
+**注意 **：  如果是组件之间交流不多的话那么可以直接使用 **getChildContext**   用this.context  来获取 。
+
+**实现 ** ： connect和Provider    action对象 
+
+1. Action： 本质上是 JavaScript 普通对象 **我们约定他必须要有一个type 的属性**  被定义成字符串常量，第二个属性是需要传递到数据最好是一个对象
+
+在创建action的时候我们是将他以函数的返回的形式来船舰的。、
+
+```javascript
+*export* const createIncrementAction = data => ({type:INCREMENT,data})
+```
+
+在redux中我们只需要将action创建的函数结果传给disaptch 就可以发起一次dispatch 过程
+
+```javascript
+jia:number => dispatch(createIncrementAction(number)),
+```
+
+这一步就直接将createIncrementAction这个action直接dispath 了。
+
+2. connect  使用connect()方法 能够获得redux store 
+
+使用：  放在privider 中        或者
+
+`connect([mapStateToProps], [mapDispatchToProps], [mergeProps], [options])`
+
+```javascript
+export default connect(mapStateToProps, mapDispatchToProps)(TodoApp)
+```
+
+3. *reducers*  ：描述 action 如何改变 state 树    reducer 只是一个接收 state 和 action，并返回新的 state 的函数
+
+4. dispatch ：改变内部 state 惟一方法是 dispatch 一个 action
+
+5. state ：被储存在一棵 object tree 中，并且这个 object tree 只存在于唯一一个 [store] 中         获取方法：store.getState()  
+
+   
+
+#### 利用到nanoid
+
+NanoID 是一个创建唯一 `key` 的轻量级的脚本库
+
+*import* {nanoid} *from* 'nanoid' 
+
+nanoid（）；  方法自动生成一个唯一的id
+
+#### connect  
+
+作用：连接React组件与 Redux store。
+
+```javascript
+export default connect(
+	state => ({
+		persons: state.persons,
+		count: state.count
+	}),//映射状态
+	{ addPerson }//映射操作状态的方法
+)(Person)
+```
+
+#### reducers
+
+`reducer` 创建一个 `store` ，每当我们在 `store` 上 `dispatch` 一个 `action` ， `store` 内的数据就会相应地发生变化
+
+可得： reducer用来创建store 的
+
+#### applyMiddleware
+
+是执行中间件的， 引入中间件
+
+```javascript
+import {createStore,applyMiddleware} from 'redux'
+
+import thunk from 'redux-thunk'
+```
+
+引入中间件使用函数 ，  引入thunk中间件用于执行异步操作
+
+```javascript
+export default createStore(reducer,composeWithDevTools
+	(applyMiddleware(thunk)))
+```
+
+在暴露的时候使用中间件
 
 
 
+```javascript
+export const incrementAsync = (data,time) => {
+	return (dispatch)=>{
+		setTimeout(()=>{
+			dispatch(increment(data))
+		},time)
+	}
+}
+```
 
+执行了异步的action   类型是函数就是异步action
 
+其实异步的操作可以交给组件的自身去操作，但是这里要交给action
 
+**步骤：**1.  yarn add redux-thunk     在store中引入并使用applyMiddware方法去使用thunk      
 
+2. 创建的异步函数不再返回一般对象而是一个函数   在函数中写异步任务
 
+3. 异步任务有结果后分发一个同步的action去操作真正的数据
 
+## react -redux    
 
+1.  所有的ui组件都应该包在容器组件中 他们是父子关系
+2. 容器组件和redux 打交道 里面可以使用redux 的api
+3. ui组件不会去使用任何的redux 和api 这些都交给容器组件（父组件）去做。
+4. 容器组件(父组件)   redux 保存的状态  用于操作状态的方法（actions）
+5. 通过prop去传递消息
 
-
-
+![image-20211215213759512](React.assets/image-20211215213759512.png)
 
