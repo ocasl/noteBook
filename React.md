@@ -735,7 +735,19 @@ nanoid（）；  方法自动生成一个唯一的id
 
 #### connect  
 
-作用：连接React组件与 Redux store。
+作用：连接React组件（ui组件）与 Redux 
+
+1. **mapstatetoprops**：  返回的是对象 返回的key就是传给子组件的props    
+
+   第一个参数是**state** **这个state参数是必须的**（在使用的时候react-redux 已经把state传入进去了 参数接受一下就行）
+
+2.  **mapdispatchtoprops** ： 第二个是操作的方法   操作方法的参数react-redux 也会传进去的  **参数是dispatch 是一定要通过disptch 去通知redux 帮我们去操作数据的**
+
+
+
+ui 对象是没有任何的redux 的操作 ，只需要调用容器的方法
+
+返回容器组件  
 
 ```javascript
 export default connect(
@@ -800,7 +812,7 @@ export const incrementAsync = (data,time) => {
 2. 容器组件和redux 打交道 里面可以使用redux 的api
 3. ui组件不会去使用任何的redux 和api 这些都交给容器组件（父组件）去做。
 4. 容器组件(父组件)   redux 保存的状态  用于操作状态的方法（actions）
-5. 通过prop去传递消息
+5.  状态和操作状态的方法   redux 里面的     通过prop去传递消息
 
 ![image-20211215213759512](React.assets/image-20211215213759512.png)
 
