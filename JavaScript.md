@@ -25,6 +25,16 @@ console.log(newarr)
 
 ### new Object   
 
+##### new 这个过程做了哪些事情？ 
+
+创建空对象 this 指向他继承函数的原型 往这个空对象加属性和方法，新建的对象被this所引用，隐式的返回this  
+
+```javascript
+var obj = {};
+obj.__proto__ = Base.prototype;
+Base.call(obj);
+```
+
 new 出来的不是原始值
 
 ```JAVA
@@ -131,6 +141,239 @@ ECMA-262 规定 Global 对象为一种兜底对象，它所针对的是不属于
 **注意**: eval()的时候必须 极为慎重  要避免xss 的攻击噢。  
 
 
+
+#### 迭代方法
+
+ every 和 some 是相反的  传入的函数返回一个true  那结果是true 是some反之必须要全部是true 结果是true 是every      **every每个真才真，some一个真就算真
+
+#### 事件捕获和冒泡
+
+捕获从外到内
+
+冒泡从内到外
+
+#### 代理
+
+```javascript
+const proxy = new Proxy(target, handler); 
+```
+
+参数一代理目标 对象      参数二捕获器的方法名
+
+代理没有自己的原型  所有instanceof 没有用的
+
+===用来区分代理和目标对象
+
+```javascript
+const target = { 
+    foo: 'bar' 
+   }; 
+   const handler = { 
+    // 捕获器在处理程序对象中以方法名为键
+    get() { 
+    return 'handler override'; 
+    } 
+   }; 
+```
+
+handle 是代理的第二个参数也就是捕获器的名字
+
+每当代理需要读取任何属性的时候都会去触发这个方法拿到方法的返回值 。
+
+#### 函数的柯里化
+
+```javascript
+function sum(x) {
+    return function (y) {
+        return function (z) {
+            return x + y + z;
+        };
+    };
+
+    }  
+sum(1)(2)(3);
+  console.log(sum(1)(2)(3));
+```
+
+解释：  柯里化是一种将使用多个参数的一个函数转换成一系列 使用一个参数的函数的技术
+
+#### 创建对象的方法 
+
+1. 字面量创建 
+
+   ```java、
+   var obj = {}   
+   ```
+
+2. new 出来的对象 
+
+3. 使用显式的构造函数创建的函数          函数名字第一个字母的是大写
+
+4. 利用对象的create 方法 创建 。
+
+#### 原型、构造函数、实例、原型链
+
+1. Object.prototype属性原型链的顶端 。
+2. 引用类型（非基本数据类型）都有proto属性，所有函数都有prototype属性是一个普通的对象    
+
+#### Es5 es6 声明一个类
+
+5 函数声明    6 构造器声明
+
+```javascript
+class wo{
+    constructor() {   
+        this.name = name; //  函数直接可以赋值了 。 
+        this.sex = sex;
+    }
+}
+wo.sex='name'
+console.log(wo.sex);
+```
+
+#### call、apply的共同点与区别
+
+都是改变this 的指向  this 指向改变之后就是改变了对象的作用域 。 
+
+apply 后面只可以传一个数组包含全部的参数  
+
+```javascript
+var myFun = function (arg1, arg2) {
+    return arg1 === arg2
+};
+//调用
+myFun.call(this,1,1); // true
+myFun.apply(this, [1, 1]); // true
+```
+
+#### 对象的继承
+
+```javascript
+function Parent5() {
+this.name = 'name';
+this.play = [1, 2, 3];
+}
+function Child5() {
+Parent5.call(this);
+this.type = 'child5';
+}
+Child5.prototype = Object.create(Parent5.prototype); // Object.create创建的对象 就
+是参数 Child5.prototype.constructor = Child5; var s7 = new Child5();
+console.log(s7 instanceof Child5, s7 instanceof Parent5);
+console.log(s7.constructor); // 构造函数指向Child5 他是利用chdld5函数构造的
+```
+
+**bind **  不可以使用函数声明式  只可以使用函数表达式           绑定之后不会调用 **要自己去调用**
+
+返回的是新对象           上面只是改变函数的this指向
+
+#### 闭包的应用
+
+ 函数的嵌套  默认是作用域链是从内往外找变量的 但是闭包可以实现从外部拿到函数作用域里面的变量，并且保持对变量的引用不被垃圾回收 ， 将最外层的函数赋给一个标识符
+
+1. 作为返回值  2. 作为参数来传递
+
+#### 语义化的好处？
+
+H5   (audio,video)    (Canvas)  (Geolocation)  新：webworker, websocket,
+
+（header,nav,footer,aside,article,section）
+
+1. 基本上不用写什么样式就可以正常表示。
+2. 利于seo  。
+3. 方便其他无障碍设备渲染 。
+4. 便于开发维护可读性强，减少差异化。 
+
+#### 浮动的原理
+
+1. 浮动遇到浮动就不可以移动了。 
+
+消除：
+
+1. overflow:auto/ hidden; zoom:1;
+2. 加一个空标签   定义cssclear:both  修改两边标签的样式
+3. after伪类可以清除浮动。
+
+浮动会发生什么问题
+
+1. 因为浮动起来了所以父元素的高没有元素去撑开
+2. 其他元素将会替换掉浮动元素的位置 。
+3. 若第一元素浮动了其他元素也要跟着浮动。
+
+怎么解决？
+
+```javascript
+.clearfix:after{content:".";display: block;height:0;clear: both;visibility: hidden;}
+ .clearfix{display: inline-block;} /* for IE/Mac */
+```
+
+
+
+#### 浏览器存储
+
+1. 本地离线存储 localStorage 长期存储数据
+
+2. sessionStorage 的数据在浏览器关闭后自动删除
+
+#### null 和undefined 的区别
+
+1. 数值上null 是 0   undefined  是NaN
+2. null 表示不存在的对象**不应该有值**，  undefined 表示本来**应该**有值但是没有赋值
+
+#### 手写ajax 是必须的
+
+```javascript
+ var xhr = new XMLHttpRequest(); // new 对象
+        xhr.open('GET', 'demo.php', 'true'); // 创建请求
+        xhr.send()  // 发送请求
+        xhr.onreadystatechange = function () { // 根据返回的数据来接受数据
+            if (xhr.readyState === 4 & xhr.status === 200) {
+            }
+        }
+```
+
+**get和post**请求方法的区别
+
+1. get 获取信息，url 限制在2000个字符
+2. post 修改服务器的数据，  发送的信息没有限制
+3. get 是根据url传值，post 通过提交表单来传值
+
+#### JS异步加载和延迟加载
+
+1. 插入script 标签   defer  或者async  实现
+2. 创建并且插入  i frame
+3. 通过ajax 去获取js代码 然后利用eval执行 。 
+
+#### 同源策略？为什么要有这个？
+
+协议，域名，端口相同，同源策略是一种安全协议。
+
+**为什么？** 
+
+比如一个黑客程序，他利用Iframe把真正的银行登录页面嵌到他的页面上，当你使用真 实的用户名，密码登录时，他的页面就可以通过Javascript读取到你的表单中input中的内容，这样用户 名，密码就轻松到手了。
+
+#### document.write()的用法
+
+document.write只能重绘整个页面。innerHTML可以重绘页面的一部分
+
+#### 事件代理（事件委托）
+
+原本需要绑定的事件绑在父元素让父元素去监听
+
+原理： dom元素的事件冒泡，可以提高性能
+
+#### 说mongoDB和MySQL的区别
+
+monggo是nosql 型的数据库  以二进制的形式来存储的，对海量的数据存储有明显的优势
+
+优点： 1. 最终一致 保证用户的访问速度 2. 文档结构的存储方式 便捷的获取数据 。
+
+#### 304缓存的原理
+
+http码304 状态码    表示了服务器对这个数据没有进行更改 ，不返回任何的内容   
+
+1.  请求 之后  A页面               服务器返回A 页面 并且需要加上 ETag 一起缓存
+2. 之后再次发请求这时会带上etag  服务器发现这个页面（带上etag的页面）没有改变 然后返回304  未修改 和空的响应体。  
 
 
 
