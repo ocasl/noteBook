@@ -49,7 +49,15 @@ ie ： 内容包含了边框和填充的部分      那ie的只有margin
 
 **`!important` > 内联样式 `style` > ID 选择器 > 伪类选择器 > 属性选择器 = class 选择器 > 伪元素 > 元素(类型)选择器 > 关系选择器 > 通配符选择器**
 
+#### 浏览器内核，兼容性问题
 
+1.  IE是trident    Mozilla 是 gecko 的   google 是webkit 的， opera 内核是presto
+
+2. 浏览器默认的margin 和padding 不同    
+
+```css
+   解决：     *{ margin:0; padding:0;}    
+```
 
 
 
