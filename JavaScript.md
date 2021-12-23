@@ -1,4 +1,4 @@
-### 类数组和Array.from  
+###  类数组和Array.from  
 
 1. 类数组转成数组会自动给他加一个length
 2. 第三个参数配置   常量   perfix 前缀 可以被使用
@@ -375,5 +375,360 @@ http码304 状态码    表示了服务器对这个数据没有进行更改 ，�
 1.  请求 之后  A页面               服务器返回A 页面 并且需要加上 ETag 一起缓存
 2. 之后再次发请求这时会带上etag  服务器发现这个页面（带上etag的页面）没有改变 然后返回304  未修改 和空的响应体。  
 
+#### 原型和函数原型
+
+1. 对象的描述符
+
+![image-20211223165737570](JavaScript.assets/image-20211223165737570-16402498597931.png)
 
 
+
+```javascript
+ var obj = {
+            _age:18,
+            _name:"luohao",
+            // set age(value) {
+            //     this._age = value;
+            // },
+            // get age() { return this._age }
+        }
+
+        Object.defineProperties(obj, {
+            age: {
+                configurable:true,
+                enumerable:true,
+                get: function () { return this._age },
+
+                set: function (value) { this._age = value }
+            }
+        })
+        obj.age=200
+        console.log(obj);
+//  展示全部的描述符   加s获取全部的属性
+        console.log(Object.getOwnPropertyDescriptor(obj,"age")); 
+```
+
+两种写法 。  定义多个属性描述符 的方式 
+
+2. 构造函数有缺陷
+
+每次调用都要new 出来函数对象 浪费内存不好
+
+解决： **原型可以解决** 
+
+1. 隐式原型： 取出对象的属性如果实例中没有就会到原型中查找
+
+2. 显示原型
+
+![image-20211223182136619](JavaScript.assets/image-20211223182136619-16402548974732.png)
+
+![image-20211223184123930](JavaScript.assets/image-20211223184123930-16402560849543.png)
+
+注意：  函数方法放在原型上  ， ，  变量放在实例身上就好了   。
+
+```javascript
+  function Person(name, age) {
+            this.name = name;
+            this.age = age;
+        }
+        Person.prototype.eating = function () {
+            console.log(this.name +this.age+ '我在吃东西噢');
+        }
+        var p1 = new Person('罗豪',18);
+        var p2 = new Person();
+        console.log(p1.eating());
+```
+
+#### 面向对象 
+
+1. 继承   封装  多态(不明显 )
+
+    原型链变量会顺着原型链去查找需要的变量直到找到。  
+
+   ```javascript
+   var obj ={
+                  name : '罗豪',
+                  age:18,
+                msg:  function () {
+                      console.log(this.name +'年龄'+this.age+'在'+this.address) 
+                  }
+              }
+              obj.__proto__ ={}
+              obj.__proto__.__proto__ ={}
+              obj.__proto__.__proto__.__proto__ ={
+                  address:'景德镇学院啊'
+              }
+              obj.msg();
+   ```
+
+   这里把景德镇学院放在了第三层原型上但是还是可以通过方法去找到 。  
+
+​      **底层原型**   不管套多少层  最终的底层原型就是 Object.prototype
+
+Ob ject  是所有的类的父类。  。  
+
+需要继承的方法放在原型上 。 
+
+#### Es6面向对象语法糖
+
+
+
+![image-20211223195903326](JavaScript.assets/image-20211223195903326-16402607443224.png)
+
+##### Es6的中的类
+
+![image-20211223200012865](JavaScript.assets/image-20211223200012865-16402608137475.png)
+
+1. 类定义的方式
+
+类的声明 ：
+
+```javascript
+  class Test{
+     }
+     console.log(typeof Test);  // funtion
+```
+
+ 类的表达式 ： 把名字写在前面 用等号连接
+
+2. 一个类只可以有一个构造函数 
+
+类中的构造函数   new一个类出来和之前的函数对象是一样的过程 
+
+ ![image-20211223200438329](JavaScript.assets/image-20211223200438329.png)
+
+3. 静态方法
+
+静态方法就是类方法 ， 通过类名直接来访问的方法 
+
+4. **extends**
+
+super()
+
+super里面写属性名， 其实属性不会放在父类中其实还是在子类的实例中的
+
+![image-20211223200831300](JavaScript.assets/image-20211223200831300-16402613129536.png)
+
+**注意**： js引擎要求我们在子类中访问this的时候（或者在return之前）必须super()写在子类的构造函数中，
+
+5. 子类中的方法 
+
+**重写**：
+
+如果对父类的方法不满意我们可以在子类中写方法  这是 子类的方法优先被找到优先被调用不会再顺着原型链去找父类的方法了 
+
+如果要在重写的方法（这个方法和父类是一样的名字因为是重写嘛）里面调用父类的方法可以用super
+
+```javascript
+class Test {
+            constructor(name, age) {
+                this.name = name;
+                this.age = age;
+            }
+            eatings() {
+                console.log(this.name + '好帅的');
+                return 'aaaaaa'
+            }
+        }
+        class test extends Test {
+            constructor(name, age, address) {
+                super(name, age);
+
+                // this.address = address;
+            }
+            eatings() {
+                var b = super.eatings();
+                console.log(b);
+            }
+        }
+        var a = new test('luohao', 18);
+        console.log(a.eatings());
+```
+
+静态方法也可以实现 
+
+​    
+
+#### Es8 一些知识点
+
+1. object 的 keys 方法 获取对象的所有的key  
+2. object 的 values 方法 获取对象的所有的value 值
+
+```javascript
+ const obj = {
+            name: 'ddd',
+            age: 18
+        }
+        console.log(Object.keys(obj)); // 返回对象的属性
+        console.log(Object.values(obj)); // 返回对象的值
+        // 使用比较少 传入数组返回数组  字符串给拆分成数组的形式
+        console.log(Object.values(['abc', 'cba', 'nba']));
+        console.log(Object.values('abc'));
+```
+
+3. object   entries    类似于是map 键值对
+
+```javascript
+const obj = {
+            name: 'ddd',
+            age: 18
+        }
+        console.log(Object.entries(obj));
+        const objEntries = Object.entries(obj)// 获得值键对集合
+        objEntries.forEach(item=>{  // 遍历item 输出两个item
+            console.log(item[0],item[1]);
+        })
+        // 如果是数组  他的k 值就是下标  。
+        console.log(Object.entries(['a', 'b', 'c']));
+```
+
+返回对象的map键值对，  如果是数组下表为他的k值 。
+
+#### String  padding  
+
+字符串填充 。 padStrat()   padend()     用于银行卡号，和身份证号隐藏
+
+```javascript
+const cardnum= "12312312315456465"
+// 从后面开始截取
+const lastfourcardnum= cardnum.slice(-4)
+const finalcardnum= lastfourcardnum.padStart(cardnum.length,'*')
+console.log(finalcardnum);
+```
+
+身份证前面全是*  后面保留4位。 
+
+#### 监听对象的操作
+
+![image-20211223234750280](JavaScript.assets/image-20211223234750280-16402744714487.png)
+
+```javascript
+var obj ={
+    name: 'ddd',
+    age:18
+}
+Object.keys(obj).forEach(key => {
+    let value=obj[key];
+Object.defineProperty(obj,key,{
+    set:function(newValue){
+        console.log(`监听到了给${key}设置值`);
+        value= newValue
+    },
+    get:function(){
+        console.log(`监听到获取${key}的值`);
+       return value;
+    },
+})
+})
+obj.name='kobe'
+obj.age=20
+```
+
+实现了 监听获取和设置过程  ，但是优缺点 ？ 监听不到加入的属性和删除的属性
+
+#### 代理对象 
+
+解决上面的缺点 因为我们通过代理获得代理对象重写他的get ，set 劫持到数据的改变
+
+```javascript
+  var obj = {
+            name: 'ddd',
+            age: 18
+        }
+  // 参数目标对象和 			 拦截器对象  
+        const objProxy = new Proxy(obj, {
+            set: function (target, key, newValue) {
+                console.log(`监听到了给${target}对象的${key}属性被设置了`);
+                target[key] = newValue
+            },
+            get: function (target, key) {
+                console.log(`监听到了给${target}对象的${key}属性被访问了`);
+                return target[key]
+            },
+        })
+        console.log(objProxy.name);
+        console.log(objProxy.age);
+        objProxy.age = 20;
+        objProxy.name = 'aaaa';
+// 原型上的数据也被改变掉了 。  
+```
+
+JS 代理我们不仅可以**重写 getters 和  setters 方法**，我们还可以进行这些操作：deleteProperty、construct、getOwnPropertyDescriptor 等...
+
+1. 代理对象第二个参数还有很多捕获器
+
+![image-20211224000858893](JavaScript.assets/image-20211224000858893-16402757399768.png)
+
+```javascript
+function foo() {
+
+        }
+        const objProxy = new Proxy(foo, {
+            // target 目标函数， thisArg是apply的参数， arrArray是额外的参数
+            apply: function (target, thisArg, arrArray) {
+                console.log('对foo函数进行了apply 的调用');
+                return target.apply(thisArg, arrArray);
+            },
+            construct: function (target, arrArray, newTarget) {
+                return new target(...arrArray)
+            }
+        });
+        objProxy.apply({}, ['abc', 'cba'])
+        new foo('abc', 'cba')
+```
+
+一个handle.apply 的例子  。。 当改变函数的this时候会被捕获到 。 
+
+#### Reflect  的作用  
+
+原来需要利用代理来捕获的  现在直接使用reflect 上面的方法就行了
+
+![image-20211224002929390](JavaScript.assets/image-20211224002929390-16402769701869.png)
+
+```javascript
+
+        function foo() {}
+        const objProxy = new Proxy(foo, {
+            // target 目标函数， thisArg是apply的参数， arrArray是额外的参数
+            apply: function (target, thisArg, arrArray) {
+                console.log('对foo函数进行了apply 的调用');
+                return Reflect.apply(target, thisArg, arrArray);
+            },
+        });
+        objProxy.apply({}, ['abc', 'cba'])
+        new foo('abc', 'cba')
+```
+
+这个api设置的时候会给你返回一个布尔值 ， 和手动的设置不一样的。普通的监听不到设置的结果（成功或者失败）
+
+不对原来的对象做操作 ，如果用代理还去操作对象的话那就违背了代理的初衷
+
+#### Rcevier
+
+就是代理对象 第三个参数  
+
+![image-20211224004050572](JavaScript.assets/image-20211224004050572-164027765168810.png)
+
+可以改变this     那个位置的参数就是改变this的，传其他的对象也可以（但是无意义）
+
+#### Reflect 的construct 
+
+在需要构造一个对象必须要通过一个函数去构造的情况下（在函数中不可以使用super）
+
+```javascript
+function Student(name ,age) {
+            this.name = name;
+            this.age = age;
+        }
+        function Teacher(){
+        }  //  第三个参数代理对象 
+        const teacher=Reflect.construct(Student,['why',18],Teacher)
+        console.log(teacher); // 就是一个Teacher 对象 
+        console.log(teacher.__proto__===Teacher.prototype);// true
+```
+
+#### 响应式原理
+
+![image-20211224005644602](JavaScript.assets/image-20211224005644602-164027860610011.png)
+
+18
