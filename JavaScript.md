@@ -727,8 +727,536 @@ function Student(name ,age) {
         console.log(teacher.__proto__===Teacher.prototype);// true
 ```
 
-#### 响应式原理
+#### 响应式原理实现
 
-![image-20211224005644602](JavaScript.assets/image-20211224005644602-164027860610011.png)
+```javascript
+let reactiveFns=[];
+function watchFn(fn) {
+    reactiveFns.push(fn);
+} 
+var obj ={
+    name: 'ddd',
+    age:18
+}
+watchFn(function() {
+    const newName= 'luohao'
+    console.log('你好 罗豪');
+    console.log('hello world');
+    console.log(obj.name);
+})
+watchFn(function() {
+    console.log(obj.name,'============ ');
+})
+obj.name='kobe';
+// 将保存在数组里面的函数 遍历出来
+reactiveFns.forEach(fn=>{
+    fn();
+})
+```
 
-18
+1. 用数组去收集响应式的函数不好 
+
+```javascript
+class Depend {
+            constructor() {
+                this.reactiveFns = []
+            }
+
+            addDpend(reactiveFns) {
+                this.reactiveFns.push(reactiveFns);
+            }
+            notify() {
+                this.reactiveFns.forEach(fn => {
+                    fn()
+                })
+            }
+        }
+        const depend = new Depend();
+        function watchFn(fn) {
+            depend.addDpend(fn)
+        }
+        var obj = {
+            name: 'ddd', // depend对象
+            age: 18	// depend对象
+        }
+        watchFn(function () {
+            const newName = 'luohao'
+            console.log('你好 罗豪');
+            console.log('hello world');
+            console.log(obj.name);
+        })
+        watchFn(function () {
+            console.log(obj.name, '============ ');
+        })
+        obj.name = 'kobe';
+        // 将保存在数组里面的函数 遍历出来
+		// 不好，应该让他自动监听
+        depend.notify()
+```
+
+2. 封装一个类去收集  。
+3. 利用代理，监听属性的变化  在代理里面调用depend.notify()方法
+
+实现了自动监听的属性变化
+
+```javascript
+  const objProxy =new Proxy(obj,{
+        get : function( target ,key,receiver) {
+            return Reflect.get(target,key,receiver)
+
+        },
+        set : function( target ,key,newvalue,receiver)
+        {Reflect.set(target,key,newvalue,receiver);
+            depend.notify()
+
+        }
+    })
+```
+
+创建代理对象，后面的obj 全部改成objProxy
+
+4. 对象依赖管理   **WeakMap**
+
+![image-20211224094541973](JavaScript.assets/image-20211224094541973-16403103429571.png)
+
+
+
+![image-20211224094934090](JavaScript.assets/image-20211224094934090-16403105750653.png)
+
+把一个对象属性变化放在同一个Depend 对象中是不对 的 ，假设有一个info对象 那么应该放入到info对象的Depend 里面
+
+![image-20211224095046404](JavaScript.assets/image-20211224095046404-16403106473114.png)
+
+放入到正确的depend 里面
+
+```javascript
+ // 把需要响应式的函数放在数组里面
+ class Depend {
+            constructor() {
+                this.reactiveFns = []
+            }
+            addDpend(reactiveFns) {
+                this.reactiveFns.push(reactiveFns);
+            }
+            notify() {
+                this.reactiveFns.forEach(fn => {
+                    fn()
+                })
+            }
+        }
+        let adctiveReactiveFns =null
+        function watchFn(fn) {
+            adctiveReactiveFns = fn
+            fn()
+            adctiveReactiveFns=null
+            
+        }
+        const targetMap = new WeakMap();
+        function getDepend(target, key) {
+            let map = targetMap.get(target);
+            if (!map) { 
+                map = new Map();
+                targetMap.set(target, map);
+            }
+            // 这里要做判断不要去用const 用let
+            let depend = map.get(key);
+            if (!depend) {
+                depend = new Depend();
+                map.set(key, depend);
+            } 
+            return depend;
+        }
+        var obj = {
+            name: 'ddd',
+            age: 18
+        }
+        const objProxy = new Proxy(obj, {
+            get: function (target, key, receiver) {
+                const depend = getDepend(target, key); 
+                depend.addDpend(adctiveReactiveFns)
+                return Reflect.get(target, key, receiver)
+
+            },
+            set: function (target, key, newvalue, receiver) {
+                Reflect.set(target, key, newvalue, receiver);
+                const depend = getDepend(target, key);
+                depend.notify()
+            }
+        })
+        watchFn(function () {
+            const newName = 'luohao'
+            console.log('你好 罗豪');
+            console.log('hello world');
+            console.log(objProxy.name);
+        })
+        watchFn(function () {
+            console.log(objProxy.name, 'name 改变1111' );
+        })
+        watchFn(function () {
+            console.log(objProxy.age, 'age改变1111 ');
+        }) 
+        watchFn(function () {
+            console.log(objProxy.age, 'age改变2222' );
+        })
+        objProxy.name = 'kobe';
+        // 将保存在数组里面的函数 遍历出来
+```
+
+过程：
+
+![image-20211224101555136](JavaScript.assets/image-20211224101555136-16403121563435.png)
+
+![image-20211224101700515](JavaScript.assets/image-20211224101700515-16403122216196.png)
+
+放在正确的依赖里面了   
+
+```javascript
+       let adctiveReactiveFns = null
+        // 把需要响应式的函数放在数组里面
+        class Depend {
+            constructor() {
+                this.reactiveFns = new Set();
+            }
+            // addDpend(reactiveFns) {
+            //     this.reactiveFns.push(reactiveFns);
+            // }
+            notify() {
+                this.reactiveFns.forEach(fn => {
+                    fn()
+                })
+            }
+            depend() {
+                if (adctiveReactiveFns) {
+                    this.reactiveFns.add(adctiveReactiveFns)
+                }
+            }
+        }
+
+
+        function watchFn(fn) {
+            adctiveReactiveFns = fn
+            fn()
+            adctiveReactiveFns = null
+
+        }
+        const targetMap = new WeakMap();
+        function getDepend(target, key) {
+            let map = targetMap.get(target);
+            if (!map) {
+                map = new Map();
+                targetMap.set(target, map);
+            }
+            // 这里要做判断不要去用const 用let
+            let depend = map.get(key);
+            if (!depend) {
+                depend = new Depend();
+                map.set(key, depend);
+            }
+            return depend;
+        }
+        function reactive(obj) {
+            return new Proxy(obj, {
+                get: function (target, key, receiver) {
+                    const depend = getDepend(target, key);
+                    depend.depend()
+                    return Reflect.get(target, key, receiver)
+
+                },
+                set: function (target, key, newvalue, receiver) {
+                    Reflect.set(target, key, newvalue, receiver);
+                    const depend = getDepend(target, key);
+                    depend.notify()
+                }
+            })
+        }
+        const objProxy = reactive({
+            name: 'ddd',
+            age: 18
+        })
+        const fooProxy = reactive({
+            name: 'foo'
+        })
+        const infoProxy = reactive({
+            address: '上海',
+            height: 1.88
+        })
+
+        watchFn(() => {
+            console.log(fooProxy.name);
+        })
+        fooProxy.name = 'bar'
+        // 将保存在数组里面的函数 遍历出来
+```
+
+set 是add方法 但是 map 是push 方法
+
+​									**至此前面就是vue3的响应式原理**
+
+#### vue2中的响应式原理
+
+vue3使用的是代理  但是vue2 使用的是object.defineprotype
+
+```javascript
+  function reactive(obj) {
+             Object.keys(obj).forEach(key =>{
+                 let value = obj[key];
+                 Object.defineProperty(obj,key,{
+                get: function ()  {
+                    const depend = getDepend(obj, key);
+                    // 收集依赖
+                    depend.depend()
+                  return value;
+                },
+                set: function (newValue) {
+                    value =newValue           
+                    const depend = getDepend(obj, key);
+                    depend.notify()
+                }
+            })
+            })
+            return obj;
+        }
+```
+
+#### Promise 
+
+1. 原始的promise 
+
+```javascript
+ function requestData(url, successCallback, failureCallback) {
+            setTimeout(() => {
+                if (url === '200') {
+                    let name = ['abc', 'cdef', 'das'];
+                    successCallback(name)
+                } else {
+                    let errmessage = '失败了'
+                    failureCallback(errmessage)
+                }
+            }, 3000)
+        }
+        requestData('200', (res) => {
+            console.log(res);
+        }, (err) => {
+            console.log(err);
+        })
+```
+
+不好！   每个人封装的不一样 参数都不一样 。
+
+2. 更好的方案  promise 承诺 
+
+不管前面写的是什么 后面一定会有一个结果 ，
+
+异步的请求方法放在exctor 里面 
+
+   
+
+```javascript
+  function foo(){
+       return new Promise((resolve, reject) => {
+        resolve('成功了')
+       })
+    }  
+    const fooPromise =foo();
+    fooPromise.then((res) =>{
+        console.log(res);err
+    },(err) => {
+        console.log(err);
+    })
+```
+
+![image-20211224174446976](JavaScript.assets/image-20211224174446976-16403390881141.png)
+
+更加的规范了 。
+
+3. Promise代码的结构 
+
+![image-20211224211340694](JavaScript.assets/image-20211224211340694-16403516215551.png)
+
+4. then 方法传入的回调有返回值
+
+1. 如果是普通值， 那么这个普通值会被作为新的promise 的放在一个新的reslove **包裹在promise里面**
+
+2. promise 的链式调用 是产生了一个新的promise    return 的值就是新的promise 的参数**res**     
+
+```javascript
+   const promise = new Promise((resolve, reject) => {
+            resolve('hahahah')
+        })
+        promise.then(res => {
+            return  11111
+        }).then(res => {
+            console.log(res);
+        })
+```
+
+相当于是修改上面 return **设置链式的then 下面的res参数的值 **
+
+3. 上面说返回的是一个 **普通的值自动new一个promise**  那返回 一个  new promise 呢？那么这时 new  Promise（reslove=》reslove(x))  这里的 x 就是new Promise 
+
+一个promise 的返回值决定 reslove 返回的东西
+
+```javascript
+const promise = new Promise((resolve, reject) =>{
+        resolve()
+     });
+     promise.then(res=>{
+         return{
+             then:function(resolve, reject){
+                 resolve(2222)
+             }
+         }
+     }).then(res=>{
+         console.log('res:',res);
+     })
+```
+
+只有上一个promise 的reslve方法被调用了 才能继续下一个promise 
+
+![image-20211224220026078](JavaScript.assets/image-20211224220026078-16403544269992.png)
+
+4. catch 
+
+```javascript
+const promise = new Promise((resolve, reject) => {
+            throw new Error('dadasdasda')
+        });
+        promise.catch(err => {
+            console.log('err', err);
+        })
+```
+
+catch 方法会捕获new Error 的错误  和reject 的错误 
+
+```javascript
+const promise = new Promise((resolve, reject) => {
+           reject('dasdasdasda')
+        });
+        promise.then(res => {
+        }).then(res=>{
+            throw new Error('then error');
+        }).catch(err => {
+            console.log('err:',err);
+        })
+```
+
+catch 优先捕获最前面的异常  如果第一个promise 没有异常的话就会捕获第三个new Error 里面的异常
+
+5. **Promise 类的方法**
+
+1. reslove方法
+
+![image-20211224231138355](JavaScript.assets/image-20211224231138355-16403586994113.png)
+
+```javascript
+function foo(){
+     const  obj= {name:'dad'}
+     return new Promise((resolve, reject)=>{
+         resolve(obj)
+     })
+ }
+ foo().then(res=>{
+     console.log('res:',res);
+ })
+```
+
+分析上面的代码 相当于是直接返回reslove结果
+
+```javascript
+const promise =  Promise.resolve({name:'ccc'})
+promise.then(res=>{
+    console.log('res:',res);
+})
+```
+
+这个传入了一个普通的值如果是promise那会是怎样呢
+
+```javascript
+const promise =  Promise.resolve(new Promise((resolve)=>{
+    resolve('成功')
+}))
+promise.then(res=>{
+    console.log('res:',res);
+})
+```
+
+传入的是promise 对象之后就是  **在这个promise 的结果就是下一个promise 的res**
+
+2. reject 方法
+
+```javascript
+const promise =  Promise.reject(new Promise((resolve, reject)=>{
+    reject('失败')
+}))
+promise.then(res=>{
+    console.log('res:',res);
+}).catch(err=>{
+    console.log('err:',err);
+})
+```
+
+分析一波，第一行代码reject 后面**不管传什么** 都是代表错误的内容(被catch的内容）。
+
+reject是需要catch 来捕获的。
+
+```java
+const promise =  Promise.reject('dasdasdas')
+promise.catch((err)=>{
+    console.log(err);  //   dasdasdas   
+})
+```
+
+3. Promise.all   
+
+一个数组
+
+```javascript
+const p1 =  new Promise((resolve, reject) => {
+    reject('1')
+})
+const p2 =  new Promise((resolve, reject) => {
+    resolve('2')
+})
+const p3 =  new Promise((resolve, reject) => {
+    resolve('3')
+})
+Promise.all([p1, p2, p3]).then(res=>{
+    console.log(res);
+}).catch(err=>{
+    console.log(err);
+})
+```
+
+如果全部是resolve 那么他就会把reslove 的结果以数组的形式给返回
+
+如果中途有一个reject 那么他会返回**第一个reject** 的结果返回  
+
+4. allsettled 方法
+
+![image-20211224235926468](JavaScript.assets/image-20211224235926468-16403615674974.png)
+
+```javascript
+const p1 =  new Promise((resolve, reject) => {
+    reject('1')
+})
+const p2 =  new Promise((resolve, reject) => {
+    reject('2')
+})
+const p3 =  new Promise((resolve, reject) => {
+    resolve('3')
+})
+Promise.allSettled([p3, p1, p2]).then(res=>{
+    console.log(res);
+}).catch(err=>{
+    console.log(err);
+})
+```
+
+![image-20211225000156206](JavaScript.assets/image-20211225000156206.png)
+
+分析： 解决了all 方法一旦出现reject 就只返回第一个reject 结果的问题
+
+这个allsettled 从字面意思来看就是  等待全部的结果敲定之后返回他们（promise）的全部的结果  也是以数组的形式 
+
+#### 手写promise
+
