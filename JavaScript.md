@@ -1,3 +1,96 @@
+### 数组
+
+push ： 后面插入  可以插入多个             **操作之后返回数组的长度**
+
+pop ： 从后面出来       **不可以出来多个**    返回长度 
+
+unshilt ： 从头部插入     返回长度 
+
+shitft    ：  从头部出来   返回出来的值
+
+![image-20211225102423614](JavaScript.assets/image-20211225102423614-16403990646931.png)
+
+ 
+
+**数组的用法**
+
+1. 反转字符串
+
+因为字符串中没有自带的反转  所以先将字符串变成数组 调用反转的方法用join 拼接数组
+
+```js
+var a  ='abcd'
+function reverse(str) {
+    return str.split('').reverse().join('');
+}
+console.log(reverse(a));  // dcba 
+```
+
+2. 手写发布和订阅
+
+```js
+ var eventbus = {
+            arrays: {
+                click: [],
+                scroll: [],
+            },
+            on: function (type, fn) {
+                this.arrays[type] = this.arrays[type] || [] // 做初始化
+                this.arrays[type].push(fn) // push(fn)回调放入到数组中
+            },
+            emit: function (type, data) {
+                const a = this.arrays[type]
+                if (!a) return // 防御式编程 没有事件绑定就不for循环
+                for (let i = 0; i < a.length; i++) {
+                  a[i](data) // 调用a数组中的回调  回调带参数的 
+                }          // 一个事件可以有多个回调
+            }          // 全部dom都是自带发布订阅接口的
+        }
+         // 测试！！！！  先绑定 后触发！
+        eventbus.on('click', function (data) {
+            console.log('clicked' + data);
+        })
+        setTimeout(function () { eventbus.emit('click','dom元素！！') }, 1000)
+```
+
+3. lazyMan 实现
+
+```js
+ const LazyMan = function (name) {
+            const array = []
+            const fn = () => { console.log("Hi! This is " + name + '!'); next() }
+            const next = () => {
+                const fn = array.shift()
+                fn && fn()
+            }
+            array.push(fn)
+            setTimeout(() => { next() }, 0)
+            const api = {
+                sleep: (number) => {
+                    array.push(() => {
+                        setTimeout(() => { console.log('Wake up after ' + number); next() }, number * 1000)
+                    })
+                    return api
+                },
+                eat: (content) => {
+                    array.push(() => {
+                        console.log('eat ' + content); next()
+                    })
+                    return api
+                },
+                sleepFirst: (number) => {
+                    array.unshift(() => {
+                        setTimeout(() => { console.log('Wake up after ' + 5); next() }, number * 1000)
+                    })
+                    return api
+                }
+            }
+            return api
+        }
+```
+
+
+
 ###  类数组和Array.from  
 
 1. 类数组转成数组会自动给他加一个length
@@ -22,6 +115,14 @@ console.log(newarr)
 ```
 
 ![image-20211217183323213](JavaScript.assets/image-20211217183323213-16397372053781.png)
+
+
+
+
+
+
+
+
 
 ### new Object   
 
@@ -1258,5 +1359,358 @@ Promise.allSettled([p3, p1, p2]).then(res=>{
 
 这个allsettled 从字面意思来看就是  等待全部的结果敲定之后返回他们（promise）的全部的结果  也是以数组的形式 
 
+#### 用计数器来实现promise.all
+
+```js
+   const p1 = new Promise(( reject) => {
+            reject('1')
+        })
+        const p2 = new Promise(( reject) => {
+            reject('2')
+        })
+        const p3 = new Promise((resolve) => {
+            resolve('3')
+        })
+        Promise.allFn = function (val) {
+            return new Promise((resolve, reject) => {
+                let count = 0;
+                let result = [];
+                const len = val.length
+                val.forEach((item, i) => {
+                    Promise.resolve(item).then(res => {
+                        count++;
+                        result[i] = res;
+                        if (count == len) {
+                          resolve(result)
+                        }                
+                    }
+                    ).then(err => {
+                        console.log('err');
+                    })
+                    return 0
+                })
+            }).catch(err => {
+                console.log(err);
+            })
+        }
+        Promise.allFn([p1, p2, p3]).then(res => {
+            console.log(res);
+        }).catch(err => {
+            console.log(err);
+        })
+// 三个函数 三个都成功就实现一个函数
+// 先写三个promise  reject 和resolve 随便 
+// 在Promise 对象上挂载一个 all 方法  不要同名
+//  参数是一个数组  名字就取var 把 ，
+// 方法返回一个 new  Promise  声明变量count 用来计数
+// result 数组存放结果  如果长度 
+// 传入的promise数组val 用foreach 遍历出来 参数 一个是item 一个是 i 下标
+// 然后需要利用promise.solve方法去收集 成功的 如果成功就加一并且把成功的结果res放进result
+// 相应的下标上去  如果 这个count 等于传入val.lenth 那么全通过了返回result就行了 
+// 如果捕获（catch） err 之后直接打印 err的结果就好了
+```
+
 #### 手写promise
+
+1. promise 类的设计    两种设计 
+
+class myPromise{}
+
+function myPromise（）{}
+
+2. 构造函数
+
+```js
+    class myPromise{
+constructor(executor){
+    // 定义状态
+    // 定义reslove reject 的回调
+    // reslove 执行任务的队列，改变状态
+    // 获取value then 传入执行成功的回调
+    // reject 执行任务的队列 ，改变状态
+    // 获取reason then传入执行失败的回调
+
+    // try catch  
+    executor(resolve,reject);
+}
+    }
+```
+
+3. then 方法 
+
+   ```js
+     class myPromise{
+   then(onfulfilled,onrejected){
+       // this.onfulfilled = onfulfilled
+       this.onrejected = onrejected
+       
+     // 判断 onfulfilled，onrejected 会给默认值
+    // 返回promise  reslove 和reject  
+    //  判断之前的promise 状态是否确定（fulfilled)
+    // onfulfilled,onrejected 直接执行（捕获异常）
+     // 添加到数组中 push(()=>执行onfulfilled，onrejected
+     // 直接执行代码  )  
+   }
+   }
+       }
+   ```
+
+   4. catch 方法
+
+   ```js
+     class myPromise{
+   catch(onrejected){
+       return this.then(undefined,onrejected);
+   }
+       }
+   ```
+
+5. finally 方法
+
+```js
+class myPromise{
+        finally(onfinally){
+            return this.then(()=>{
+                onfinally()
+            },()=>{
+                onrejected()
+            })
+        }
+    }
+```
+
+6. resolve和reject 
+
+略。
+
+7. all/allsettled
+
+核心 ：  要知道new promise 的reslove ，reject 在什么情况下执行
+
+ all： 全部的成功按传入的数组顺序执行promise  若有一个失败 返回第一个失败的结果 
+
+allsettled ： 一定是全部结果出来 ， 不管结果怎么样 ， 都要有结果但必要reslove
+
+8. race 和any 
+
+race ：只需要有结果   
+
+any： 情况1. 必须得到一个reslove 的结果，  情况二如果没有reslove 那么全部都是rejected
+
+### 参数作用域
+
+1. 参数的意义是给函数提供东西  
+
+如果函数内部已经声明了就访问函数内部的，如果函数内没有就去参数作用域去找
+
+2. 当函数参数有默认值的会有一个作用域  ，没有默认值默认为undefined ， 
+3. 寻找变量的过程是如果本作用域里面没有就会 **往外层去寻找**
+
+<img src="JavaScript.assets/image-20211225182352856-16404278338191.png" alt="image-20211225182352856" style="zoom:200%;" />
+
+```js
+   var x = 0;
+        function foo(x, y = function () {
+            x = 3; console.log(x);
+            ;
+        }) {
+            console.log(x);
+            var x = 2
+            y();
+            console.log(x);
+        }
+        foo(); 
+        console.log(x);
+```
+
+### 进程和线程
+
+![image-20211225185309823](JavaScript.assets/image-20211225185309823-16404295906362.png)
+
+#### **浏览器中的线程**
+
+![image-20211225192705318](JavaScript.assets/image-20211225192705318-16404316264283.png)
+
+#### **时间循环**
+
+![image-20211225194502666](JavaScript.assets/image-20211225194502666-16404327037424.png)
+
+将异步的任务放进事件队列中等			计时完成就将事件抛出去进入到主线程中
+
+****
+
+#### 微任务和宏任务
+
+回调函数需要加入到队列中， 
+
+但是事件队列也要分成 **宏任务队列和微任务队列**
+
+宏任务队列： 定时器， ajax ，dom ，uirending
+
+微任务： promise  then  
+
+**规范**  微任务清空之后再执行宏任务
+
+ ![image-20211225194957390](JavaScript.assets/image-20211225194957390-16404329982675.png)
+
+![image-20211225195009778](JavaScript.assets/image-20211225195009778-16404330110226.png)
+
+#### promise 面试题 
+
+1. 微任务和宏任务
+
+![image-20211225195425452](JavaScript.assets/image-20211225195425452.png)
+
+```javascript
+setTimeout(function() {
+       console.log('settimeout1');
+new Promise((res)=>{
+    resolve()
+}).then(()=>{
+    new Promise((res)=>{
+        resolve()
+    }).then(()=>{
+        console.log('then4');
+    });
+    console.log('then2');
+})
+   })
+   new Promise((res)=>{
+       console.log('promise1');
+       resolve()
+   }).then(()=>{
+       console.log('then1');
+   })
+   setTimeout(()=>{
+       console.log('settimeout2');
+   })
+   console.log(2);
+   queueMicrotask(()=>{
+       console.log('queueMicrotask');
+   })
+   new Promise((res)=>{
+       resolve()
+   }).then(()=>{
+       console.log('then3');
+   })
+```
+
+2. 异步任务
+
+**题目1**
+
+![image-20211225200900473](JavaScript.assets/image-20211225200900473-16404341421218.png)
+
+```js
+ async function bar(){
+     console.log('2222');
+     return new Promise((resolve)=>{
+         resolve()
+     })
+ }
+ async function foo() {
+     console.log('11111');
+     await bar();  // 等bar 执行完成再执行下面的 
+     console.log('3333');
+ }
+ foo();
+ console.log('4444444');
+```
+
+结果是 1   2   4   3     在执行bar 的时候我们foo函数下面的会被放入到reslove里面形成微任务的
+
+所以先执行main scprit 的代码    **也就是await 后面会被加入到微任务的队列中的**
+
+**题目2**
+
+```js
+async function async1(){
+    console.log('asncy 1 start ');
+    await async2();
+    console.log('async1 end');
+}
+async function async2(){
+    console.log('asncy 2 start ');
+    return  undefined;
+}
+console.log('主线成开始');
+setTimeout(()=>{
+    console.log('setTimeout');
+},0)
+async1()
+new Promise((resolve)=>{
+    console.log('Promise1');
+    resolve();
+}).then(()=>{
+    console.log('Promise2');
+})
+console.log('主线程结束 ');
+```
+
+```js
+主线成开始
+ asncy 1 start 
+ asncy 2 start 
+ Promise1
+ 主线程结束 
+ async1 end
+ Promise2
+ setTimeout
+```
+
+![image-20211225210303509](JavaScript.assets/image-20211225210303509-16404373848279.png)
+
+注意settimeout 是宏任务
+
+
+
+
+
+ 
+
+
+
+### Node 的事件循环
+
+
+
+![image-20211225220617037](JavaScript.assets/image-20211225220617037.png)
+
+![image-20211225221622970](JavaScript.assets/image-20211225221622970-164044178410212.png)
+
+#### node中的宏任务和微任务
+
+![image-20211225221807484](JavaScript.assets/image-20211225221807484-16404418884101.png)
+
+#### Node事件循环的顺序
+
+![image-20211225221935953](JavaScript.assets/image-20211225221935953-16404419769382.png)
+
+**题目1**
+
+![image-20211225232422243](JavaScript.assets/image-20211225232422243-16404458633503.png)
+
+### 异常处理
+
+![image-20211226000400403](JavaScript.assets/image-20211226000400403-16404482412874.png)
+
+```js
+  function foo(type) {
+            if (type === 0) {
+                throw new Error("错了")
+            }
+        }
+        function bar() {
+            try {
+                foo(0);// 如果foo发生异常程序不会终止而是
+                // 被catch到错误 
+            } catch (err) {//存放err错误  err.message拿到错误信息
+                console.log('err：', err.message);
+                alert(err);    // 提示用户出错了。 
+            }
+        }
+        bar()  //  判断foo的参数是否是异常的参数 
+```
+
+![image-20211226001357655](JavaScript.assets/image-20211226001357655.png)
 
