@@ -1708,9 +1708,41 @@ console.log('主线程结束 ');
                 console.log('err：', err.message);
                 alert(err);    // 提示用户出错了。 
             }
-        }
+        }  // 无异常不会被中断
         bar()  //  判断foo的参数是否是异常的参数 
 ```
 
-![image-20211226001357655](JavaScript.assets/image-20211226001357655.png)
+#### finally 
+
+不管发布发生错误都会执行
+
+一般做一些close 操作  
+
+### 模块化 （很重要）
+
+一个文件就是空间
+
+![image-20211226095730680](JavaScript.assets/image-20211226095730680-16404838515712.png)
+
+![image-20211226100301149](JavaScript.assets/image-20211226100301149-16404841823683.png)
+
+早期： 函数有自己的作用域  但是全局用不了  通过函数返回一个对象  
+
+社区形成规范   Es moudule 是官方的规范
+
+
+
+#### common Js   规范
+
+Node 是使用这种规范
+
+![image-20211226101534820](JavaScript.assets/image-20211226101534820-16404849356305.png)
+
+webpack的配置还是用的common js
+
+1. 导出的方案
+
+![image-20211226124815869](JavaScript.assets/image-20211226124815869-16404940968356.png)
+
+moudel.exports 是一定导出 
 

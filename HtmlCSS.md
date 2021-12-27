@@ -63,7 +63,27 @@ ie ： 内容包含了边框和填充的部分      那ie的只有margin
 
 
 
+# iframe
 
+1. 开销大比其他高出1到2的数量级
+2. 阻塞onload 事件（页面或图像加载完成后立即发生的事件）因为iframe 页面脚本图片样式表等等速度加载慢导致 **父级的** onload事件也会被阻塞
+3. 动态的设置inframe 的src，他说阻塞父类的页面onload事件   
 
+解决方案：  在js代码中将src 赋给 window对象上的frames 访问标签的id  
 
+```js
+<iframe id="myIframe" frameborder="2" width="400" height="300"></iframe>
+// 自动挂载Window 原型上 
+<script>
+    console.log(window.frames);
+ var url = 'b.html';
+ window.frames['myIframe'].src = url;
+</script>
+```
+
+广告最好放在div上 不是iframe 上 ， 广告中js 通过设置div 的innerthtml 放在页面中
+
+4. iframe 于父页面共享连接池  （从池中借用连接，不关闭）
+
+**连接池**通过在开始时创建一个连接池并在结束时保持连接的活动（即不关闭连接）来缓解此问题
 
