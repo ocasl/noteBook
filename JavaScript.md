@@ -1678,11 +1678,11 @@ console.log('主线程结束 ');
 
 ![image-20211225221622970](JavaScript.assets/image-20211225221622970-164044178410212.png)
 
-#### node中的宏任务和微任务
+### node中的宏任务和微任务
 
 ![image-20211225221807484](JavaScript.assets/image-20211225221807484-16404418884101.png)
 
-#### Node事件循环的顺序
+### Node事件循环的顺序
 
 ![image-20211225221935953](JavaScript.assets/image-20211225221935953-16404419769382.png)
 
@@ -1732,7 +1732,7 @@ console.log('主线程结束 ');
 
 
 
-#### common Js   规范
+### common Js   规范
 
 Node 是使用这种规范
 
@@ -1746,3 +1746,26 @@ webpack的配置还是用的common js
 
 moudel.exports 是一定导出 
 
+### 模块的加载过程
+
+![image-20211228233505875](JavaScript.assets/image-20211228233505875-16407057066832.png)
+
+### Es  模块  
+
+![image-20211228233918027](JavaScript.assets/image-20211228233918027-16407059587773.png)
+
+#### es模块的基本使用
+
+使用了标签里面引入 就不能使用import 引入
+
+**不使用live server 就会发送跨域**
+
+一般在导入的时候取别名
+
+导入起别名：
+
+```js
+import { name as a , age  as b} from './a.js' 
+```
+
+ ![image-20211228234958037](JavaScript.assets/image-20211228234958037-16407065991184.png)
