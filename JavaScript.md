@@ -1769,3 +1769,81 @@ import { name as a , age  as b} from './a.js'
 ```
 
  ![image-20211228234958037](JavaScript.assets/image-20211228234958037-16407065991184.png)
+
+#### 结合使用
+
+导出的方法
+
+![image-20211229151213548](JavaScript.assets/image-20211229151213548-16407619344481.png)
+
+生成了一个index.js 在utils 里面  然后所有的包在index.js导出
+
+```js
+import { name, age } from './a.js'
+import { foo } from './b.js' 
+export {name ,age , foo}
+```
+
+在index.html 使用
+
+```js
+  <script src='./main.js' type='module' >    </script>
+```
+
+#### Default 使用
+
+最重要的东西是默认导出的
+
+```js
+import name from "./utils/"
+```
+
+默认的只可以有一个  。  不可以多次导出 
+
+**导入方式之间不要冲突**
+
+### Es module 的解析过程
+
+![image-20211229165819135](JavaScript.assets/image-20211229165819135-16407682999712.png)
+
+type 是模块化的     type =‘module’
+
+import 只可以放在外层 函数不可以  **一定是确定的**
+
+1. 构建阶段
+
+![image-20211229170048253](JavaScript.assets/image-20211229170048253-16407684493833.png)
+
+2.  实例化阶段
+
+![image-20211229170322859](JavaScript.assets/image-20211229170322859-16407686037664.png)
+
+3. 内部原理
+
+静态分析和动态运行两部分组成 。 先是静态后面是真正的去计算值。 
+
+**第三方使用common js**
+
+### 包管理器
+
+
+
+![image-20211229180445667](JavaScript.assets/image-20211229180445667-16407722869265.png)
+
+![image-20211229180515983](JavaScript.assets/image-20211229180515983-16407723168156.png)
+
+两种管理包的方式  显然选择第二种
+
+1. npm
+
+![image-20211229181716386](JavaScript.assets/image-20211229181716386-16407730372508.png)
+
+如何使用？
+
+属性：
+
+![image-20211229181938558](JavaScript.assets/image-20211229181938558-16407731793879.png)
+
+![image-20211229182223591](JavaScript.assets/image-20211229182223591-164077334438511.png)
+
+ 
