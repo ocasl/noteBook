@@ -1846,4 +1846,64 @@ import 只可以放在外层 函数不可以  **一定是确定的**
 
 ![image-20211229182223591](JavaScript.assets/image-20211229182223591-164077334438511.png)
 
- 
+###  JSON 数据存储
+
+#### 由来
+
+
+
+![image-20211231215420838](JavaScript.assets/image-20211231215420838-16409588620022.png)
+
+#### 语法
+
+![image-20211231220728586](JavaScript.assets/image-20211231220728586-16409596494743.png)
+
+#### 序列化
+
+![image-20211231221912894](JavaScript.assets/image-20211231221912894-16409603535184.png)
+
+1. 传入数组
+
+![image-20211231222048679](JavaScript.assets/image-20211231222048679-16409604498175.png)
+
+2. 传入回调函数
+
+![image-20211231222206474](JavaScript.assets/image-20211231222206474-16409605271346.png)
+
+3.   第三个参数
+
+![image-20211231222236853](JavaScript.assets/image-20211231222236853-16409605577997.png)
+
+4. obj中有toJSON方法
+
+全部会先去走那个方法
+
+#### JSON的深拷贝
+
+```js
+const obj = {
+    "name": "foo",
+    "age": "18",
+    "friends": { "foo": 00, "age": 11 },
+    foo: function () { return true }
+}
+// 引用赋值。 地址是一样的。
+const info = obj;
+// 浅拷贝 
+// 复制一份再放入里面  地址不一样  就算是对象改变了 
+// 访问的还是不一样的 
+const info2 = { ...obj }
+// 深拷贝  函数和方法是不能转换的 
+const jsonString = JSON.stringify(obj)
+const obj3 = JSON.parse(jsonString)
+obj.friends.foo = '库里'
+```
+
+先json.stringfly 再parse
+
+### 浏览器存储
+
+#### storage
+
+![image-20211231225537731](JavaScript.assets/image-20211231225537731-16409625384438.png)
+
