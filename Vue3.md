@@ -228,3 +228,82 @@ vue-loader
 
 框架中已经有了自己的方案 。
 
+### vue cli 和vite
+
+脚手架，内置了webpack相关的配置我们不需要从0开始配置webpack   ，  可以通过cli来选择项目的配置
+
+### ref
+
+解构之后没有响应式
+
+###  FILE过渡技术
+
+即FLIP（First, Last, Invert, Play）
+
+作用：FLIP技术可以以一种高性能的方式动态的改变css（比如，height、width、float、绝对定位、Flexbox和Grid等）。
+
+#### 为什么好？
+
+为了性能 ，平常中使用transform和opacity 是高性能
+
+FiLE模拟布局 . 
+
+####  **Animations API**      
+
+在一些浏览器是不支持的 
+
+时序模型 和 动画模型来实现的。
+
+### @keyframes
+
+通过 @keyframes 规则，您能够创建动画。
+
+一套css 变成另外一套的css样式
+
+通过百分比的形式表示时间，from to 也行
+
+#### translate3d
+
+在x y z 方向上移动的位置 。 
+
+**perspective**   表示是观察者到z平面距离 
+
+
+
+### 组合api
+
+生命周期 ， 
+
+setup 替代了 之前的 beforecreate  和created 
+
+#### privide 和inject   
+
+共享数据和共享对象   使用readonly数据说明父组件给子组件共享的数据是不可以被子组件  **修改的**
+
+mixin 的缺陷， 命名的冲突，    
+
+组合api解决这些问题 
+
+#### hooks
+
+将setup中的函数全部放在hook中js文件  命名的规则是usexxx.js 
+
+在使用的时候就要在vue文件中导入(import usexx.js from  hooks)usecount 的函数 ，可以进行解构  。
+
+也是可以在return 中直接... usecount()  解构 ， 直接返回 ，
+
+#### 封装hooks
+
+exprot default function （title='xxx'）
+
+修改docoment 里面的title
+
+  使用watch 去监听修改的新值可以获取新值将新值赋给titleref.value 的值 。
+
+wacth是惰性的 ，只有发生改变才会进行操作watch 里面的回调 ，   也可以在watch 的实参里面传入immediate：true 保证他可以立即的执行回调 	
+
+
+
+
+
+​                 
