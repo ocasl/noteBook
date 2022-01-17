@@ -300,10 +300,196 @@ exprot default function （title='xxx'）
 
   使用watch 去监听修改的新值可以获取新值将新值赋给titleref.value 的值 。
 
-wacth是惰性的 ，只有发生改变才会进行操作watch 里面的回调 ，   也可以在watch 的实参里面传入immediate：true 保证他可以立即的执行回调 	
+wacth是惰性的 ，只有发生改变才会进行操作watch 里面的回调 ，   也可以在watch 的实参里面传入immediate：true 保证他可以立即的执行回调 
+
+#### jsx的使用
+
+render（）{return <div>dddd</div>}
+
+vue确实是支持的jsx   安装babael 的插件 ，jsx 的插件就支持
+
+方法写在render（）函数中
+
+组件也可以使用这种方式写 ， helloworld组件 ， 利用插槽的话，{{对象 this.$slots=.default==}}   在写hooks 的时候可以用jsx 来编写
+
+#### 
+
+#### vue3高级语法的补充
+
+自定义组件，v-show  v-for -v-model  
+
+当我们需要对**dom元素进行底层操作**的时候才自定义
+
+通过directives选项，组件中的这个选项是**局部**的指令
+
+自定义**全局**指令app的directive方法就是全部的指令
+
+实践：
+
+1. 
+
+导入ref  onmount 生命周期
+
+```
+setup(){
+const input =ref(null)
+onmount（（）=》{
+input.value.focous();)
+}
+return {
+input 
+}
+}
+```
+
+把这个focus放在了挂载的函数上面
+
+2. 在input标签上面放v-focus的属性
+
+然后在export default { directives 定义选项   focus：{
+
+mounted（el，bindings，vonode， prenode ）{logxxxx操作
+
+el.focus // focus 操作 }
+
+我们这里只需要是前面的el
+
+3. 全局
+
+app.directives(''focus',{
+
+mounted(el,bindings,vnode, prevonode 
+
+log.....     换行      el.focus  //   对el的相关操作     })
+
+#### 指令的生命周期
+
+created ： 在绑定元素属性和事件监听器被应用之前调用
+
+beforemounted ; 当指令第一次被绑定并且挂载父组件之前被调用
+
+mounted  ，   beforeupdate  update  ， unmount  ...
+
+这些生命周期写在自定义的组件里面 。 。
+
+el就是标签的整体，  bindings 放的是修饰符和自定义组件的属性       **这两个参数是常用的**
+
+#### vue插件
+
+对象类型和函数类型  
+
+install函数  对象的类型 
+
+添加全局的方法或者属性  添加全局资源指令过滤器过渡
+
+全局mixin  添加一些组件的选项 
+
+ 一个库提供自己的api   
+
+install(app){app.config.globalpropeoties.$name='codewhy'}
+
+函数： 
+
+export default function （app）{log 。。。。 app}
+
+#### 渲染器的实现
+
+通过h函数来创建两个个vnode，通过判断两个vnode 的长度， 通过patch 函数去做移除操作 。
+
+#### 响应式的思想
+
+先收集响应式， 然后在收集里面去运行这个响应式
+
+往每个依赖加上一个订阅，用集合去存放  保证不重复
+
+dep的实现  **手动的通知 ，手动的收集**
+
+addeffect（effect）{ 副作用的函数 this.suscribers.add(effect);
+
+notify（）{通知this.suscribers.foreach(effect=》{effect（）);   拿到effect 之后执行
+
+**自动的收集**
+
+可以把dep.addeffect(effect)这个过程放在watcheffect 函数里面让他来自动的去收集依赖   在watcheffect函数中调用dep.depend() 自动把effect添加到set里面
+
+effect如何获取？ 添加depend函数   
+
+let actveeffect =null ；    把effect 赋给activeeffect  之后去调用dep.depend()   然后把activeeffect 滞空 
+
+#### vue-router
+
+vue的官方路由， vue.js核心深度继承
+
+需要安装
+
+```js
+import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router'
+```
+
+两种路由可以选择
+
+内置的组件routerlink ：    需要传参数  to属性   repalce 属性默认情况下是push形式 ， 如果标签有repalce属性那不可以返回   	
+
+映射关系：  放在一个名字叫做routes的对象里面 一个路径对应一个组件
+
+```js
+const routes = [
+  { 
+    path: "/", 
+    redirect: "/home" 
+  },
+```
+
+重定向：  访问默认的路径的时候   直接重定向直接跳到path
+
+active-class：点击routerlink 标签之后 会默认自动加上一个class名字   active-class 属性可以修改他
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 
 ​                 
+
