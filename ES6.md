@@ -10,7 +10,7 @@
 const arr =[1,1,3,4,5,6,7,8,9,10]
    arr.forEach((item,index,arr) => {
        console.log(item,index)
-   })
+   })      
 ```
 
 item是每个遍历出来的元素  index 是索引 ，arr需要遍历的数组
